@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Түнгі Шам — мәзір</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, late-night cafe, confident and simple — a menu you tap at the table
+   IDEA: a printed cafe menu card come alive on a phone
+   PICTURE: hand-drawn SVG dishes (cups, teapot, plates, cakes) with steam rising
+   COLOUR and TYPE: near-black espresso ground, milk-foam ink, pomegranate accent; Rubik
+   LAYOUT: compact header, sticky category chips, card list, cart bar fixed at bottom */
+:root{color-scheme:dark;--bg:#0f0e0d;--card:#1a1816;--card2:#221f1c;--line:#2c2825;--ink:#f3ece2;--mute:#a59c90;--acc:#ff5a4e;--milk:#ece2d3;--ok:#5bd18b}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Rubik,system-ui,sans-serif;overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 max(4vw,16px)}
+header{padding-top:20px}
+.top{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.lang{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
+.lang button{border:0;background:none;padding:8px 12px;border-radius:9px;font-size:14px;font-weight:500;color:var(--mute);min-height:38px}
+.lang button[aria-pressed=true]{background:var(--milk);color:#14110f}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:16px;align-items:end;margin:18px 0 16px}
+h1{font-size:clamp(34px,8vw,52px);line-height:1.05;margin:0 0 8px;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.sub{color:var(--mute);margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;font-size:14px}
+.meta span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.dot.off{background:var(--acc)}
+.hero svg{width:150px;height:150px}
+.steam path{animation:rise 3.2s ease-in-out infinite;opacity:0}
+.steam path:nth-child(2){animation-delay:1s}.steam path:nth-child(3){animation-delay:2s}
+@keyframes rise{0%{opacity:0;transform:translateY(8px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+.search{position:relative;margin-bottom:6px}
+.search input{width:100%;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--card);padding:0 14px 0 44px;font-size:16px}
+.search svg{position:absolute;left:14px;top:15px;width:20px;height:20px;stroke:var(--mute)}
+.chips{position:sticky;top:0;z-index:5;background:rgba(15,14,13,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.chips .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+.chips button{flex:none;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--card);font-size:15px;font-weight:500;white-space:nowrap}
+.chips button.on{background:var(--acc);border-color:var(--acc);color:#140b0a}
+main{padding-bottom:120px}
+html{scroll-padding-top:76px}
+section{padding-top:22px}
+h2{font-size:22px;margin:0 0 12px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:12px}
+.card{display:grid;grid-template-columns:100px minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px}
+.art{position:relative;border-radius:14px;background:radial-gradient(circle at 50% 35%,var(--card2),#141210);aspect-ratio:1}
+.art svg{width:100%;height:100%}
+.tag{position:absolute;top:6px;left:6px;font-size:12px;font-weight:700;background:var(--acc);color:#140b0a;border-radius:8px;padding:2px 7px}
+.tag.n{background:var(--milk)}
+.info{display:flex;flex-direction:column}
+h3{font-size:17px;margin:2px 0 2px;font-weight:700;line-height:1.25}
+.info p{margin:0 0 8px;color:var(--mute);font-size:14px;line-height:1.4}
+.row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.price{font-weight:700;font-size:17px;white-space:nowrap}
+.add{width:44px;height:44px;border-radius:50%;border:0;background:var(--acc);color:#140b0a;font-size:26px;font-weight:500;line-height:1}
+.step{display:inline-flex;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:22px}
+.step button{width:44px;height:42px;border:0;background:none;font-size:22px}
+.step b{min-width:22px;text-align:center}
+.empty{color:var(--mute);padding:40px 0;text-align:center}
+.sample{color:var(--mute);font-size:13px;margin:26px 0 0}
+footer{color:var(--mute);font-size:13px;padding:8px 0 20px}
+.bar{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translate(-50%,150%);width:min(620px,calc(100% - 28px));z-index:8;border:0;border-radius:18px;background:var(--acc);color:#140b0a;min-height:60px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700;font-size:16px;box-shadow:0 12px 30px rgba(0,0,0,.5);transition:transform .3s}
+.bar.show{transform:translate(-50%,0)}
+.bar .cnt{background:#140b0a;color:var(--acc);border-radius:10px;padding:2px 9px;margin-right:8px}
+.back{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;opacity:0;pointer-events:none;transition:opacity .25s}
+.back.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;width:min(640px,100%);max-height:88vh;overflow:auto;z-index:10;background:#171513;border-radius:24px 24px 0 0;border:1px solid var(--line);padding:10px 18px calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,105%);transition:transform .3s}
+.sheet.show{transform:translate(-50%,0)}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.x{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:20px}
+.line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.line .nm{font-weight:500}.line .pr{color:var(--mute);font-size:14px;white-space:nowrap}
+label{display:block;font-size:14px;color:var(--mute);margin:16px 0 6px}
+select,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:var(--card);padding:12px;font-size:16px}
+select{height:48px}
+textarea{min-height:70px;resize:vertical}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin:18px 0 12px}
+.go{width:100%;min-height:56px;border:0;border-radius:16px;background:var(--acc);color:#140b0a;font-weight:700;font-size:17px}
+.ghost{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:16px;border:1px solid var(--line);background:var(--card);margin-top:10px;font-weight:500;color:var(--ink);text-decoration:none}
+.done{text-align:center;padding:10px 0}
+.done svg{width:96px;height:96px}
+.done h2{margin:10px 0 4px}
+.done p{color:var(--mute);margin:0 0 14px}
+@media(max-width:600px){.hero{grid-template-columns:minmax(0,1fr) 104px}.hero svg{width:104px;height:104px}.card{grid-template-columns:88px minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.steam path{animation:none;opacity:.6}.bar,.sheet,.back{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="cup" viewBox="0 0 120 100"><ellipse cx="60" cy="86" rx="44" ry="8" fill="#000" opacity=".4"/><ellipse cx="60" cy="80" rx="44" ry="10" fill="#d9cdbb"/><ellipse cx="60" cy="78" rx="34" ry="6" fill="#ece2d3"/><path d="M28 38h64l-6 34q-2 8-12 8H46q-10 0-12-8z" fill="#f6efe6"/><path d="M34 38h6l4 36q-8-1-10-8z" fill="#fff" opacity=".5"/><path d="M92 46q14 0 12 12t-16 10" fill="none" stroke="#f6efe6" stroke-width="6"/><ellipse cx="60" cy="38" rx="32" ry="7" fill="currentColor"/><path d="M50 37q10-5 20 0q-10 4-20 0" fill="#f6efe6" opacity=".8"/></symbol>
+<symbol id="pot" viewBox="0 0 120 100"><ellipse cx="60" cy="88" rx="40" ry="7" fill="#000" opacity=".4"/><path d="M22 44q-12-4-14 6l10 4q4-6 8-2z" fill="currentColor"/><ellipse cx="58" cy="60" rx="34" ry="28" fill="currentColor"/><ellipse cx="48" cy="52" rx="10" ry="14" fill="#fff" opacity=".25"/><path d="M90 50q16 2 12 18t-14 8" fill="none" stroke="currentColor" stroke-width="6"/><ellipse cx="58" cy="34" rx="20" ry="5" fill="#ece2d3"/><circle cx="58" cy="27" r="5" fill="#ece2d3"/><path d="M28 64h60" stroke="#ece2d3" stroke-width="4" opacity=".7"/></symbol>
+<symbol id="glass" viewBox="0 0 120 100"><ellipse cx="60" cy="90" rx="26" ry="5" fill="#000" opacity=".4"/><path d="M78 6l-8 34" stroke="#ece2d3" stroke-width="4" stroke-linecap="round"/><path d="M38 20h44l-6 64q-1 6-8 6H52q-7 0-8-6z" fill="#fff" opacity=".18"/><path d="M41 40h38l-4 44q-1 4-6 4H51q-5 0-6-4z" fill="currentColor"/><rect x="48" y="46" width="11" height="11" rx="2" fill="#fff" opacity=".45" transform="rotate(-12 53 51)"/><rect x="62" y="56" width="10" height="10" rx="2" fill="#fff" opacity=".35" transform="rotate(14 67 61)"/><path d="M42 24l4 58" stroke="#fff" stroke-width="3" opacity=".35"/></symbol>
+<symbol id="plate" viewBox="0 0 120 100"><ellipse cx="60" cy="74" rx="52" ry="18" fill="#000" opacity=".4"/><ellipse cx="60" cy="66" rx="52" ry="18" fill="#d9cdbb"/><ellipse cx="60" cy="64" rx="38" ry="12" fill="#ece2d3"/><path d="M30 62q4-26 30-28t30 28q-30 10-60 0z" fill="currentColor"/><path d="M40 52q8-12 20-12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".35"/><circle cx="72" cy="50" r="5" fill="#5bd18b"/><circle cx="50" cy="58" r="4" fill="#ff5a4e"/></symbol>
+<symbol id="cake" viewBox="0 0 120 100"><ellipse cx="60" cy="86" rx="46" ry="8" fill="#000" opacity=".4"/><path d="M14 80l46-50 46 50z" fill="#ece2d3"/><path d="M20 76h80l-6-7H26z" fill="currentColor"/><path d="M28 64h64l-6-7H34z" fill="currentColor"/><path d="M40 52h40l-6-7H46z" fill="currentColor"/><path d="M60 30l46 50h-8L60 38z" fill="#000" opacity=".15"/><circle cx="60" cy="26" r="7" fill="#ff5a4e"/><path d="M60 19q2-6 6-7" stroke="#5bd18b" stroke-width="3" fill="none"/></symbol>
+<symbol id="bun" viewBox="0 0 120 100"><ellipse cx="60" cy="84" rx="48" ry="8" fill="#000" opacity=".4"/><path d="M12 70q6-40 48-42t48 42q-8 10-20 4q-8-26-28-26T32 74q-12 6-20-4z" fill="currentColor"/><path d="M32 74q4-24 28-26t28 26q-28 10-56 0z" fill="currentColor" opacity=".85"/><path d="M42 44l8 26M60 40v32M78 44l-8 26" stroke="#000" stroke-width="3" opacity=".2"/><path d="M30 50q14-16 30-16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".3"/></symbol>
+</defs>
+</svg>
+
+<header class="wrap">
+  <div class="top">
+    <span class="sub" id="tagline"></span>
+    <div class="lang" role="group" aria-label="Тіл / Язык">
+      <button id="l-kk" data-l="kk">ҚАЗ</button><button id="l-ru" data-l="ru">РУС</button>
+    </div>
+  </div>
+  <div class="hero">
+    <div>
+      <h1>Түнгі Шам</h1>
+      <div class="meta">
+        <span><i class="dot" id="dot"></i><b id="openTxt"></b> · 08:00–00:00</span>
+        <span id="addr">Тараз, Абай даңғылы</span>
+      </div>
+    </div>
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <g class="steam" fill="none" stroke="#ece2d3" stroke-width="4" stroke-linecap="round"><path d="M48 30q-8-10 0-20"/><path d="M62 28q-8-10 0-20"/><path d="M76 30q-8-10 0-20"/></g>
+      <use href="#cup" x="0" y="20" width="120" height="100" style="color:#8a5a3b"/>
+    </svg>
+  </div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <input id="q" type="search" autocomplete="off">
+  </div>
+</header>
+
+<nav class="chips"><div class="wrap" id="chips"></div></nav>
+
+<main class="wrap">
+  <div id="list"></div>
+  <p class="sample" id="sample"></p>
+</main>
+<footer class="wrap" id="foot"></footer>
+
+<button class="bar" id="bar"><span><span class="cnt" id="bCnt">0</span><span id="bTxt"></span></span><span id="bSum"></span></button>
+<div class="back" id="back"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody"></div></div>
+
+<script>
+{
+const CATS=[["coffee","Кофе","Кофе"],["tea","Шай мен сусындар","Чай и напитки"],["bfast","Таңғы ас","Завтраки"],["hot","Ыстық тағамдар","Горячие блюда"],["sweet","Десерттер","Десерты"]];
+const D=[
+["c1","coffee","cup","#8a5a3b","Капучино","Капучино","Эспрессо мен қалың сүт көбігі","Эспрессо и плотная молочная пенка",1200,"hit"],
+["c2","coffee","cup","#a87452","Латте","Латте","Жұмсақ, сүті көп","Мягкий, с большим количеством молока",1300,""],
+["c3","coffee","cup","#c99a6e","Ванильді раф","Раф ванильный","Кілегей, ваниль, эспрессо","Сливки, ваниль, эспрессо",1600,"new"],
+["c4","coffee","cup","#4a2c1c","Американо","Американо","Таза қара кофе","Чёрный кофе",900,""],
+["t1","tea","pot","#b8452f","Қазақша шай","Казахский чай","Шәйнекпен, сүт пен бауырсақ, 2 адамға","Чайник, молоко и баурсаки, на двоих",1500,"hit"],
+["t2","tea","glass","#c2203a","«Анар» лимонады","Лимонад «Гранат»","Анар, жалбыз, газдалған су","Гранат, мята, газированная вода",1400,""],
+["t3","tea","glass","#7a2550","Жидек морсы","Ягодный морс","Мүкжидек пен қарақат","Клюква и смородина",1100,""],
+["b1","bfast","plate","#e8a93a","«Тараз» таңғы асы","Завтрак «Тараз»","Қуырылған жұмыртқа, бауырсақ, ірімшік, шай","Яичница, баурсаки, сыр, чай",2400,"hit"],
+["b2","bfast","plate","#e7b98a","Сырниктер","Сырники","Қаймақ пен жидек тосабымен","Со сметаной и ягодным вареньем",1900,""],
+["b3","bfast","bun","#d79a4e","Бадам круассаны","Круассан с миндалём","Таңертең пісірілген","Свежая выпечка каждое утро",1100,"new"],
+["h1","hot","plate","#c8562f","Лағман","Лагман","Қолдан созылған кеспе, сиыр еті","Тянутая лапша, говядина",2600,"hit"],
+["h2","hot","plate","#d9913c","Палау","Плов","Қой еті, сәбіз, ноқат","Баранина, морковь, нут",2800,""],
+["h3","hot","plate","#9bbf5a","Цезарь салаты","Салат «Цезарь»","Тауық, пармезан, кептірілген нан","Курица, пармезан, сухарики",2700,""],
+["d1","sweet","cake","#c98a3c","Медовик","Медовик","Бал қабаттары мен кілегей","Медовые коржи и крем",1500,"hit"],
+["d2","sweet","cake","#e9d7b0","Чизкейк","Чизкейк","Классикалық, жидек тұздығымен","Классический, с ягодным соусом",1700,""],
+["d3","sweet","bun","#e0a24a","Бауырсақ пен бал","Баурсаки с мёдом","Ыстық бауырсақ, тау балы","Горячие баурсаки, горный мёд",900,""]
+];
+const T={
+kk:{tag:"Кофе · ас үй · Тараз",open:"Ашық",closed:"Жабық",addr:"Тараз, Абай даңғылы",q:"Мәзірден іздеу",empty:"Ештеңе табылмады",hit:"Хит",neu:"Жаңа",items:"Себетті ашу",cart:"Сіздің тапсырысыңыз",table:"Үстел нөмірі",note:"Тілек (міндетті емес)",noteP:"Мысалы: қантсыз, ащы емес",total:"Барлығы",order:"Тапсырыс беру",done:"Тапсырыс қабылданды!",doneP:"Даяшы жақында келеді. Бұл демо: тапсырыс ешқайда жіберілмейді.",wa:"WhatsApp арқылы жіберу",again:"Жаңа тапсырыс",num:"Тапсырыс №",close:"Жабу",sample:"Кафе атауы, мәзір мен бағалар — үлгі.",foot:"Демо QR-мәзір · Qagaz Studio жасаған"},
+ru:{tag:"Кофе · кухня · Тараз",open:"Открыто",closed:"Закрыто",addr:"Тараз, пр. Абая",q:"Поиск по меню",empty:"Ничего не найдено",hit:"Хит",neu:"Новинка",items:"Открыть корзину",cart:"Ваш заказ",table:"Номер стола",note:"Пожелание (необязательно)",noteP:"Например: без сахара, не острое",total:"Итого",order:"Оформить заказ",done:"Заказ принят!",doneP:"Официант скоро подойдёт. Это демо: заказ никуда не отправляется.",wa:"Отправить через WhatsApp",again:"Новый заказ",num:"Заказ №",close:"Закрыть",sample:"Название кафе, меню и цены — пример.",foot:"Демо QR-меню · сделано Qagaz Studio"}
+};
+const $=id=>document.getElementById(id);
+const st={lang:"kk",q:"",cart:{},table:"5",note:""};
+try{const s=JSON.parse(localStorage.getItem("shamMenu")||"{}");if(s.lang)st.lang=s.lang;if(s.cart)st.cart=s.cart}catch(e){}
+const save=()=>{try{localStorage.setItem("shamMenu",JSON.stringify({lang:st.lang,cart:st.cart}))}catch(e){}};
+const L=()=>T[st.lang];
+const li=st.lang==="kk"?0:1;
+const fm=n=>n.toLocaleString("ru-RU").replace(/\s/g," ")+" ₸";
+const nm=it=>st.lang==="kk"?it[4]:it[5];
+const ds=it=>st.lang==="kk"?it[6]:it[7];
+const byId=id=>D.find(x=>x[0]===id);
+
+function ctrl(id){const n=st.cart[id]||0;
+  return n?`<span class="step"><button data-sub="${id}" aria-label="−">−</button><b>${n}</b><button data-add="${id}" aria-label="+">+</button></span>`
+  :`<button class="add" data-add="${id}" aria-label="+ ${nm(byId(id))}">+</button>`}
+
+function card(it){const t=L();
+  const tag=it[9]==="hit"?`<span class="tag">${t.hit}</span>`:it[9]==="new"?`<span class="tag n">${t.neu}</span>`:"";
+  return `<article class="card"><div class="art">${tag}<svg viewBox="0 0 120 100" style="color:${it[3]}" aria-hidden="true"><use href="#${it[2]}"/></svg></div>
+  <div class="info"><h3>${nm(it)}</h3><p>${ds(it)}</p><div class="row"><span class="price">${fm(it[8])}</span>${ctrl(it[0])}</div></div></article>`}
+
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)mark(e.target.dataset.c)})},{rootMargin:"-90px 0px -65% 0px"});
+function mark(c){document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",b.dataset.c===c))}
+
+function render(){const t=L(),k=st.lang==="kk"?1:2,q=st.q.trim().toLowerCase();
+  document.documentElement.lang=st.lang==="kk"?"kk":"ru";
+  $("tagline").textContent=t.tag;$("addr").textContent=t.addr;$("q").placeholder=t.q;$("sample").textContent=t.sample;$("foot").textContent=t.foot;
+  const h=new Date().getHours(),open=h>=8;$("openTxt").textContent=open?t.open:t.closed;$("dot").classList.toggle("off",!open);
+  $("l-kk").setAttribute("aria-pressed",st.lang==="kk");$("l-ru").setAttribute("aria-pressed",st.lang==="ru");
+  $("chips").innerHTML=CATS.map(c=>`<button data-c="${c[0]}">${c[k]}</button>`).join("");
+  const html=CATS.map(c=>{const its=D.filter(it=>it[1]===c[0]&&(!q||(it[4]+" "+it[5]+" "+it[6]+" "+it[7]).toLowerCase().includes(q)));
+    return its.length?`<section id="s-${c[0]}" data-c="${c[0]}"><h2>${c[k]}</h2><div class="grid">${its.map(card).join("")}</div></section>`:""}).join("");
+  $("list").innerHTML=html||`<p class="empty">${t.empty}</p>`;
+  io.disconnect();document.querySelectorAll("#list section").forEach(s=>io.observe(s));
+  bar();if($("sheet").classList.contains("show")&&!$("sheet").dataset.done)sheet();}
+
+function totals(){let n=0,s=0;for(const id in st.cart){n+=st.cart[id];s+=st.cart[id]*byId(id)[8]}return{n,s}}
+function bar(){const{n,s}=totals();$("bar").classList.toggle("show",n>0&&!$("sheet").classList.contains("show"));$("bCnt").textContent=n;$("bTxt").textContent=L().items;$("bSum").textContent=fm(s)}
+
+function change(id,d){const n=(st.cart[id]||0)+d;if(n>0)st.cart[id]=n;else delete st.cart[id];save();render()}
+
+function sheet(){const t=L(),{s}=totals();delete $("sheet").dataset.done;
+  const lines=Object.keys(st.cart).map(id=>{const it=byId(id);return `<div class="line"><div><div class="nm">${nm(it)}</div><div class="pr">${fm(it[8])} × ${st.cart[id]}</div></div>${ctrl(id)}</div>`}).join("");
+  const opts=Array.from({length:20},(_,i)=>`<option ${String(i+1)===st.table?"selected":""}>${i+1}</option>`).join("");
+  $("sheetBody").innerHTML=`<div class="sh"><h2 style="margin:0">${t.cart}</h2><button class="x" data-close aria-label="${t.close}">✕</button></div>${lines}
+  <label for="tbl">${t.table}</label><select id="tbl">${opts}</select>
+  <label for="note">${t.note}</label><textarea id="note" placeholder="${t.noteP}">${st.note.replace(/</g,"&lt;")}</textarea>
+  <div class="tot"><span>${t.total}</span><span>${fm(s)}</span></div><button class="go" data-order>${t.order}</button>`;
+  if(!Object.keys(st.cart).length)closeSheet()}
+
+function done(){const t=L(),{s}=totals(),no=Math.floor(100+Math.random()*900);
+  const txt=`${t.num}${no}\n${t.table}: ${st.table}\n`+Object.keys(st.cart).map(id=>`${nm(byId(id))} × ${st.cart[id]}`).join("\n")+`\n${t.total}: ${fm(s)}`+(st.note?`\n${st.note}`:"");
+  $("sheet").dataset.done="1";
+  $("sheetBody").innerHTML=`<div class="done"><svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="44" fill="#5bd18b"/><path d="M28 50l13 13 27-29" fill="none" stroke="#0f0e0d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h2>${t.done}</h2><p>${t.num}${no} · ${t.table} ${st.table} · ${fm(s)}</p><p>${t.doneP}</p>
+  <a class="ghost" href="https://wa.me/?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">${t.wa}</a>
+  <button class="go" style="margin-top:10px" data-again>${t.again}</button></div>`}
+
+function openSheet(){$("sheet").classList.add("show");$("back").classList.add("show");sheet();bar()}
+function closeSheet(){$("sheet").classList.remove("show");$("back").classList.remove("show");bar()}
+
+document.addEventListener("click",e=>{const b=e.target.closest("button");
+  if(!b)return;
+  if(b.dataset.add){change(b.dataset.add,1)}
+  else if(b.dataset.sub){change(b.dataset.sub,-1)}
+  else if(b.dataset.c){const s=$("s-"+b.dataset.c);if(s)s.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});mark(b.dataset.c)}
+  else if(b.dataset.l){st.lang=b.dataset.l;save();if($("sheet").dataset.done)closeSheet();render()}
+  else if(b.id==="bar"){openSheet()}
+  else if("close" in b.dataset){closeSheet()}
+  else if("order" in b.dataset){done()}
+  else if("again" in b.dataset){st.cart={};st.note="";save();closeSheet();delete $("sheet").dataset.done;render()}
+});
+$("back").addEventListener("click",closeSheet);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+document.addEventListener("change",e=>{if(e.target.id==="tbl")st.table=e.target.value});
+document.addEventListener("input",e=>{if(e.target.id==="note")st.note=e.target.value;if(e.target.id==="q"){st.q=e.target.value;render()}});
+render();
+}
+</script>
+</body>
+</html>
